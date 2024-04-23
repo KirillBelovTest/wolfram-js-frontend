@@ -822,12 +822,13 @@ const read_wl_settings = () => {
     const file = fs.readFileSync(path.join(installationFolder, '_settings.wl'), 'utf8');
     console.log(file);
 
-    const r = new RegExp(/("\w*") -> ("?[^"|>,]*"?)/gm);
+    const r = new RegExp(/("\w*") -> *\n* *("?[^"|>,]*"?)/gm);
     let m;
 
     const parse = (s) => {
         if (s == 'True') return true;
         if (s == 'False') return false;
+        if (s.charAt(0) === '"') return s.slice(1,-1);
         return s;
     }
 
@@ -858,6 +859,7 @@ function create_window(opts, cbk = () => {}) {
                 titleBarStyle: 'hiddenInset',
                 width: 800,
                 height: 600,
+                minWidth: 545,
                 //backgroundMaterial: 'acrylic',
                 title: options.title,
                 //transparent:true,
@@ -891,6 +893,7 @@ function create_window(opts, cbk = () => {}) {
                 titleBarOverlay: true,
                 width: 800,
                 height: 600,
+                minWidth: 545,
                 backgroundMaterial: 'mica',
                 title: options.title,
                 //transparent:true,
@@ -977,6 +980,7 @@ function create_window(opts, cbk = () => {}) {
                 titleBarOverlay: true,
                 width: 800,
                 height: 600,
+                minWidth: 545,
                 title: options.title,
                 //transparent:true,
                 maximizable: true,
@@ -1277,6 +1281,13 @@ app.whenReady().then(() => {
 
     //server.url.local = `http://127.0.0.1:20560`;
     //create_window({url: 'http://127.0.0.1:20560', show: true, focus: true, cacheClear: true});
+
+    ipcMain.on('system-window-enlarge-if-needed', (e, p) => {
+        const bonds = windows.focused.win.getBounds();
+        if (bonds.width < 800) {
+            windows.focused.win.setBounds({ width: 800 , animate: true}, true);
+        }      
+    });
 
     ipcMain.on('system-window-toggle', (e, p) => {
         const bonds = windows.focused.win.getBounds();
@@ -1949,6 +1960,12 @@ function check_installed (cbk, window) {
                 cbk();
             }, 5000);
 
+            const repo = server.frontend.UpdatesChannelRepo ||  'JerryI/wolfram-js-frontend';
+            const branch = server.frontend.UpdatesChannelBranch ||  'updates';
+
+            console.log([repo, branch]);
+            //app.exit(-1);
+
             //check internet
             const test = net.fetch('https://github.com');
             test.then((result) => {
@@ -1956,7 +1973,9 @@ function check_installed (cbk, window) {
                     clearTimeout(watchdog);
 
                     //check the official version
-                    const request = net.fetch('https://raw.githubusercontent.com/JerryI/wolfram-js-frontend/updates/package.json');
+
+
+                    const request = net.fetch('https://raw.githubusercontent.com/'+repo+'/'+branch+'/package.json');
                     request.then((result) => {
                         if (result.status === 200) {
                             console.log(result);
@@ -2004,6 +2023,8 @@ function check_installed (cbk, window) {
                         cbk();
                     });
 
+                } else {
+                    windows.log.print('Failed! using ' + repo + ' and branch ' + branch, '\x1b[32m');
                 }
             });
         });            
@@ -2037,7 +2058,11 @@ function install_frontend(cbk, window) {
 
         //path to zip
         const pathToFile = path.join(installationFolder, 'pkg.zip');
-        downloadFile('https://api.github.com/repos/JerryI/wolfram-js-frontend/zipball/updates', pathToFile, (file) => {
+
+        const repo = server.frontend.UpdatesChannelRepo ||  'JerryI/wolfram-js-frontend';
+        const branch = server.frontend.UpdatesChannelBranch ||  'updates';
+
+        downloadFile('https://api.github.com/repos/'+repo+'/zipball/'+branch, pathToFile, (file) => {
             windows.log.print('Unzipping...', '\x1b[32m');
 
             const extracted = path.join(installationFolder, '__extracted');

@@ -886,6 +886,11 @@ select {
   margin-bottom: 0.25rem;
 }
 
+.my-2 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .my-auto {
   margin-top: auto;
   margin-bottom: auto;
@@ -1753,6 +1758,11 @@ select {
   background-color: rgb(134 239 172 / 0.5);
 }
 
+.bg-green-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(240 253 244 / var(--tw-bg-opacity));
+}
+
 .bg-red-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 226 226 / var(--tw-bg-opacity));
@@ -2355,6 +2365,14 @@ select {
   --tw-ring-color: rgb(156 163 175 / var(--tw-ring-opacity));
 }
 
+.ring-green-600\/20 {
+  --tw-ring-color: rgb(22 163 74 / 0.2);
+}
+
+.ring-red-600\/20 {
+  --tw-ring-color: rgb(220 38 38 / 0.2);
+}
+
 .ring-opacity-5 {
   --tw-ring-opacity: 0.05;
 }
@@ -2813,6 +2831,22 @@ select {
   --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+[sidebar="hidden"] .zen\:ml-0 {
+  margin-left: 0px;
+}
+
+[sidebar="hidden"] .zen\:hidden {
+  display: none;
+}
+
+[sidebar="hidden"] .zen\:pl-0 {
+  padding-left: 0px;
+}
+
+[sidebar="hidden"] .zen\:pl-20 {
+  padding-left: 5rem;
 }
 
 @media (min-width: 640px) {
